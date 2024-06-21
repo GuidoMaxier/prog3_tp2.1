@@ -32,7 +32,7 @@ class Card {
         cardElement.classList.remove("flipped");
     }
 
-    //1.-
+    //1.- INICIO 
     toggleFlip() {
         if (this.isFlipped) {
             this.#unflip();
@@ -45,6 +45,7 @@ class Card {
     matches(otherCard) {
         return this.name === otherCard.name;
     }
+    // FIN
 
 }
 
@@ -89,6 +90,25 @@ class Board {
             this.onCardClick(card);
         }
     }
+
+    //2.- INICIO
+    shuffleCards() {
+        this.cards.sort(() => Math.random() - 0.5);
+        this.render();
+    }
+    flipDownAllCards() {
+        this.cards.forEach((card) => {
+            card.isFlipped = false;
+            card.element.querySelector(".card").classList.remove("flipped");
+        });   
+    }
+
+    reset() {
+        this.flippedCards = [];
+        this.matchedCards = [];
+        this.shuffleCards();
+    }
+    // FIN
 }
 
 class MemoryGame {
@@ -117,6 +137,47 @@ class MemoryGame {
             }
         }
     }
+    //3.- INICIO
+    checkForMatch() {
+        const [card1, card2] = this.flippedCards;
+
+        if (card1.matches(card2)) {
+            this.matchedCards.push(card1, card2);
+            if (this.matchedCards.length === this.board.cards.length) {
+                this.showCongratulationsMessage();
+            }
+        } else {
+            card1.toggleFlip();
+            card2.toggleFlip();
+        }
+
+        this.flippedCards = [];
+    }
+
+    // showCongratulationsMessage() {
+    //     alert("¡Has ganado!");
+    //     this.resetGame();
+    // }
+
+    showCongratulationsMessage() {
+        Swal.fire({
+            title: '¡Felicidades!',
+            text: '¡Has ganado!',
+            icon: 'success',
+            confirmButtonText: 'Aceptar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                this.resetGame();
+            }
+        });
+    }
+
+    resetGame() {
+        this.board.flipDownAllCards();
+        this.board.reset();
+    }
+    // FIN
+
 }
 
 document.addEventListener("DOMContentLoaded", () => {
