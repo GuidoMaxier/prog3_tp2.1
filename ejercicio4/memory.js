@@ -134,6 +134,9 @@ class MemoryGame {
         this.score = 0;
         this.startTimer();
         this.resetMoves();
+
+         // Top 5 al iniciar el juego
+         this.displayTopScores();
     }
 
     #handleCardClick(card) {
@@ -153,11 +156,13 @@ class MemoryGame {
 
         if (card1.matches(card2)) {
             this.matchedCards.push(card1, card2);
+
             if (this.matchedCards.length === this.board.cards.length) {
                 
                 this.calculateScore();
                 this.stopTimer();
                 this.showCongratulationsMessage();
+                this.displayTopScores();
             }
         } else {
             card1.toggleFlip();
@@ -228,8 +233,8 @@ class MemoryGame {
 
     calculateScore(){
 
-        //maximo puntaje 10_000, son 12 cartas, 12s sino falla
-        const totalScore = 10024;
+        //maximo puntaje 1_000, son 12 cartas, 12s sino falla
+        const totalScore = 1024;
         this.score = totalScore - (this.moves + this.totalTimeSeconds);
         if (this.score < 0){
             this.score = 0;
@@ -246,10 +251,10 @@ class MemoryGame {
 
 document.addEventListener("DOMContentLoaded", () => {
     const cardsData = [
-        { name: "Python", img: "./img/Python.svg" },
-        { name: "JavaScript", img: "./img/JS.svg" },
-        { name: "Java", img: "./img/Java.svg" },
-        { name: "CSharp", img: "./img/CSharp.svg" },
+        { name: "Python", img: "./img/Python.svg"}, 
+        { name: "JavaScript", img: "./img/JS.svg"},
+        { name: "Java", img: "./img/Java.svg"},
+        { name: "CSharp", img: "./img/CSharp.svg"},
         { name: "Go", img: "./img/Go.svg" },
         { name: "Ruby", img: "./img/Ruby.svg" },
     ];
