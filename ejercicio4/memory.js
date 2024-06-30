@@ -125,6 +125,16 @@ class MemoryGame {
         this.flipDuration = flipDuration;
         this.board.onCardClick = this.#handleCardClick.bind(this);
         this.board.reset();
+
+
+        //Adicional
+        this.moves = 0;
+        this.timer = null;
+        this.totalTimeSeconds = 0;
+        this.score = 0;
+        this.startTimer();
+        this.resetMoves();
+
     }
 
     #handleCardClick(card) {
@@ -136,6 +146,7 @@ class MemoryGame {
                 setTimeout(() => this.checkForMatch(), this.flipDuration);
             }
         }
+        this.incrementMoves();
     }
     //3.- INICIO
     checkForMatch() {
@@ -143,8 +154,13 @@ class MemoryGame {
 
         if (card1.matches(card2)) {
             this.matchedCards.push(card1, card2);
+
             if (this.matchedCards.length === this.board.cards.length) {
+                
+                this.calculateScore();
+                this.stopTimer();
                 this.showCongratulationsMessage();
+
             }
         } else {
             card1.toggleFlip();
@@ -154,15 +170,11 @@ class MemoryGame {
         this.flippedCards = [];
     }
 
-    // showCongratulationsMessage() {
-    //     alert("¡Has ganado!");
-    //     this.resetGame();
-    // }
 
     showCongratulationsMessage() {
         Swal.fire({
             title: '¡Felicidades!',
-            text: '¡Has ganado!',
+            text: '¡Has ganado! - Puntuacion: ' + this.score,
             icon: 'success',
             confirmButtonText: 'Aceptar'
         }).then((result) => {
@@ -175,17 +187,71 @@ class MemoryGame {
     resetGame() {
         this.board.flipDownAllCards();
         this.board.reset();
+
+        this.stopTimer();
+        this.resetMoves();
+        this.score = 0;
+ 
     }
     // FIN
+
+    //EJEERCICIO A DICIONAL
+    incrementMoves() {
+        this.moves++;
+        document.getElementById("moves").textContent = `Movimientos: ${this.moves}`;
+    }
+
+    resetMoves() {
+        this.moves = 0;
+        document.getElementById("moves").textContent = `Movimientos: ${this.moves}`;
+    }
+
+    startTimer() {
+        let seconds = 0;
+        let minutes = 0;
+        let timerElement = document.getElementById("timer");
+
+        this.timer = setInterval(() => {
+            seconds++;
+            this.totalTimeSeconds++;
+            if (seconds === 60) {
+                minutes++;
+                seconds = 0;
+            }
+            timerElement.textContent = `Tiempo: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }, 1000);
+    }
+
+    stopTimer() {
+        clearInterval(this.timer);
+        this.timer = null;
+        this.totalTimeSeconds = 0;
+
+    }
+
+    calculateScore(){
+
+        //maximo puntaje 1_000, son 12 cartas, 12s sino falla
+        const totalScore = 1024;
+        this.score = totalScore - (this.moves + this.totalTimeSeconds);
+        if (this.score < 0){
+            this.score = 0;
+        }
+
+    }
+
+    resetScore() {
+        this.score = 0;
+    }
 
 }
 
 document.addEventListener("DOMContentLoaded", () => {
     const cardsData = [
-        { name: "Python", img: "./img/Python.svg" },
-        { name: "JavaScript", img: "./img/JS.svg" },
-        { name: "Java", img: "./img/Java.svg" },
-        { name: "CSharp", img: "./img/CSharp.svg" },
+        { name: "Python", img: "./img/Python.svg"}, 
+        { name: "JavaScript", img: "./img/JS.svg"},
+        { name: "Java", img: "./img/Java.svg"},
+        { name: "CSharp", img: "./img/CSharp.svg"},
         { name: "Go", img: "./img/Go.svg" },
         { name: "Ruby", img: "./img/Ruby.svg" },
     ];
@@ -199,5 +265,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById("restart-button").addEventListener("click", () => {
         memoryGame.resetGame();
+        memoryGame.startTimer();
     });
 });
