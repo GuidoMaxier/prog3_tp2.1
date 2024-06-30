@@ -125,6 +125,13 @@ class MemoryGame {
         this.flipDuration = flipDuration;
         this.board.onCardClick = this.#handleCardClick.bind(this);
         this.board.reset();
+
+
+        //Adicional
+        this.moves = 0;
+        this.timer = null;
+        this.score = 0;
+        this.startTimer();
     }
 
     #handleCardClick(card) {
@@ -136,6 +143,7 @@ class MemoryGame {
                 setTimeout(() => this.checkForMatch(), this.flipDuration);
             }
         }
+        this.incrementMoves();
     }
     //3.- INICIO
     checkForMatch() {
@@ -144,6 +152,8 @@ class MemoryGame {
         if (card1.matches(card2)) {
             this.matchedCards.push(card1, card2);
             if (this.matchedCards.length === this.board.cards.length) {
+                this.stopTimer()
+                this.calculateScore();
                 this.showCongratulationsMessage();
             }
         } else {
@@ -154,15 +164,11 @@ class MemoryGame {
         this.flippedCards = [];
     }
 
-    // showCongratulationsMessage() {
-    //     alert("¡Has ganado!");
-    //     this.resetGame();
-    // }
 
     showCongratulationsMessage() {
         Swal.fire({
             title: '¡Felicidades!',
-            text: '¡Has ganado!',
+            text: '¡Has ganado! - Puntuacion: ' + this.score,
             icon: 'success',
             confirmButtonText: 'Aceptar'
         }).then((result) => {
@@ -175,8 +181,61 @@ class MemoryGame {
     resetGame() {
         this.board.flipDownAllCards();
         this.board.reset();
+
+        this.stopTimer();
+        this.resetMoves();
+        this.score = 0;
+ 
     }
     // FIN
+
+    //EJEERCICIO A DICIONAL
+    incrementMoves() {
+        this.moves++;
+        document.getElementById("moves").textContent = `Movimientos: ${this.moves}`;
+    }
+
+    resetMoves() {
+        this.moves = 0;
+        document.getElementById("moves").textContent = `Movimientos: ${this.moves}`;
+    }
+
+    startTimer() {
+        let seconds = 0;
+        let minutes = 0;
+        let timerElement = document.getElementById("timer");
+
+        this.timer = setInterval(() => {
+            seconds++;
+            if (seconds === 60) {
+                minutes++;
+                seconds = 0;
+            }
+            timerElement.textContent = `Tiempo: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }, 1000);
+    }
+
+    stopTimer() {
+        clearInterval(this.timer);
+        this.timer = null;
+
+    }
+
+
+    calculateScore(){
+        const inverseTime = 1/this.timer;
+        const inverseMoves = 1/this.moves;
+
+        this.score = (inverseTime * 500) + (inverseMoves * 1000);
+        console.log(this.score);
+        document.getElementById("score").textContent = `Puntuación: ${this.score}`;
+
+    }
+
+
+
+
+
 
 }
 
@@ -199,5 +258,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById("restart-button").addEventListener("click", () => {
         memoryGame.resetGame();
+        memoryGame.startTimer();
     });
 });
