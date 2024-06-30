@@ -130,8 +130,10 @@ class MemoryGame {
         //Adicional
         this.moves = 0;
         this.timer = null;
+        this.totalTimeSeconds = 0;
         this.score = 0;
         this.startTimer();
+        this.resetMoves();
     }
 
     #handleCardClick(card) {
@@ -152,8 +154,9 @@ class MemoryGame {
         if (card1.matches(card2)) {
             this.matchedCards.push(card1, card2);
             if (this.matchedCards.length === this.board.cards.length) {
-                this.stopTimer()
+                
                 this.calculateScore();
+                this.stopTimer();
                 this.showCongratulationsMessage();
             }
         } else {
@@ -207,6 +210,7 @@ class MemoryGame {
 
         this.timer = setInterval(() => {
             seconds++;
+            this.totalTimeSeconds++;
             if (seconds === 60) {
                 minutes++;
                 seconds = 0;
@@ -218,23 +222,24 @@ class MemoryGame {
     stopTimer() {
         clearInterval(this.timer);
         this.timer = null;
+        this.totalTimeSeconds = 0;
 
     }
-
 
     calculateScore(){
-        const inverseTime = 1/this.timer;
-        const inverseMoves = 1/this.moves;
 
-        this.score = (inverseTime * 500) + (inverseMoves * 1000);
-        console.log(this.score);
-        document.getElementById("score").textContent = `Puntuación: ${this.score}`;
+        //maximo puntaje 10_000, son 12 cartas, 12s sino falla
+        const totalScore = 10024;
+        this.score = totalScore - (this.moves + this.totalTimeSeconds);
+        if (this.score < 0){
+            this.score = 0;
+        }
 
     }
 
-
-
-
+    resetScore() {
+        this.score = 0;
+    }
 
 
 }
