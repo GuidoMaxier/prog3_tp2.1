@@ -135,8 +135,6 @@ class MemoryGame {
         this.startTimer();
         this.resetMoves();
 
-         // Top 5 al iniciar el juego
-         this.displayTopScores();
     }
 
     #handleCardClick(card) {
@@ -162,7 +160,7 @@ class MemoryGame {
                 this.calculateScore();
                 this.stopTimer();
                 this.showCongratulationsMessage();
-                this.displayTopScores();
+
             }
         } else {
             card1.toggleFlip();
@@ -245,7 +243,6 @@ class MemoryGame {
     resetScore() {
         this.score = 0;
     }
-
 
 }
 
